@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "cpu/run_lapack.h"
+#include "gpu/run_cusolver.h"
+
 
 int main(int argc, char** argv) {
     std::vector<int> test_list = {2000, 4000, 8000};

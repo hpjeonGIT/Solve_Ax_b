@@ -36,10 +36,10 @@ void GPU_solver::run_cusolver(const int &nn, const int &method) {
 	std::default_random_engine generator;
 	std::uniform_real_distribution<double> distribution(0,1);
 	for (int i=0;i<n;i++){
-	    for (int j=0;j<m;j++){
-		A_[j*n+i] = distribution(generator); 
+	    for (int j=0;j<n;j++){
+		h_A_[j*n+i] = distribution(generator); 
 	    }
-	    b_[i] = distribution(generator);
+	    h_b_[i] = distribution(generator);
 	}
     } else {
 	for (int i=0; i<n ; i++) {
