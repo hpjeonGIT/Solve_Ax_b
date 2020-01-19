@@ -1,0 +1,13 @@
+# Code project
+- Solve Ax=b
+- A could be a dense or sparse matrix
+- For a dense matrix
+    - LAPACK for CPU solver
+    - CuSolver for GPU solver
+- For a sparse matrix
+    - HYPRE for CPU solver
+    - CUSP for GPU solver
+- Objectives of the project
+    - Practice LAPACK/HYPRE/CuSolver/CUSP
+    - Practice of CMake with cuda
+    - Practice of unit-test using C++11
