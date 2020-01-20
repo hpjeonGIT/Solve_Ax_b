@@ -14,7 +14,8 @@
 #include "helper_cuda.h"
 
 
-void GPU_solver::run_cusolver(const int &nn, const int &method) {
+void GPU_solver::run_cusolver(const int &nn, const std::vector<double> &Aex,
+		const std::vector<double> &bex) {
     struct timespec start, stop;
     int n=nn, lda;
     lda = n;
@@ -23,34 +24,17 @@ void GPU_solver::run_cusolver(const int &nn, const int &method) {
     cudaError cudaStatus ;
     cusolverStatus_t cusolverStatus ;
     cusolverDnHandle_t handle ;
-    //double *h_A, *h_b; // Host memory. h_b will be the copy of d_x after solve
     double *d_A, *d_b, *d_Work; // Device memory, coeff .matrix, rhs, workspace
     int *d_pivot, *d_info, Lwork; // pivots, info, worksp. size
     int info_gpu = 0;
 // prepare memory on the host
-    //h_A = ( double *) malloc (n*n* sizeof ( double ));
-    //h_b = ( double *) malloc (n*   sizeof ( double ));
     h_A_.resize(n*n);
     h_b_.resize(n);
-    if (method ==0) {
-	std::default_random_engine generator;
-	std::uniform_real_distribution<double> distribution(0,1);
-	for (int i=0;i<n;i++){
-	    for (int j=0;j<n;j++){
-		h_A_[j*n+i] = distribution(generator); 
-	    }
-	    h_b_[i] = distribution(generator);
-	}
-    } else {
-	for (int i=0; i<n ; i++) {
-	    for (int j=0; j<n; j++) {
-		h_A_[i*n + j] = (double) (n - abs(i-j));
-	    }
-	    h_b_[i] = (double) (n - i*2);
-	}
-    }
-    cudaStatus = cudaGetDevice (0);
-    checkCudaErrors(cudaStatus);
+    h_A_ = Aex;
+    h_b_ = bex;
+    std::cout << "b0= " << h_b_[0] << std::endl;
+    cudaStatus = cudaGetDevice(0);
+    //checkCudaErrors(cudaStatus); // this yields an error ?
     cusolverStatus = cusolverDnCreate (&handle );
     // cusolverDnCreate seems to conflict with thrust::device_memory
     // 0118-2020 
