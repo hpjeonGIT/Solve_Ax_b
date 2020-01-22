@@ -3,28 +3,33 @@
 
 ## Objectives
 - Solve Ax = b
-- Using CuBLAS for GPU
 - Using LAPACK for CPU
-- Compare performance - wall time, memory foot-print on eahc
-- Unit-tests for each side
+- Using CuSolver for GPU
+- TBD: Compare performance - wall time, memory foot-print on each
+- Unit-tests for each src folder
+
+## Steps to use
+- `cd dense`
+- `mkdir build; cd build`
+- `cmake ..`
+- `make -j 3`
+- `make install`
+- `./bin/dense_solver` # Running the solver executable
+- `ctest` # For unit-test
 
 ## Code structure
 ```
-├── src
-│    ├── CPU
-│    │   └── unittest
-│    ├── GPU
-│    │   └── unittest
-│    └── main
-│        └── unittest
-├── lib
-└── extern
-    ├── CuBLAS
-    └── LAPACK
+└── src
+     ├── CPU
+     │   └── test
+     ├── GPU
+     │   └── test
+     └── main
+         └── test
 ```
 - Code building
-  - `mkdir build; cd build; cmake ../src ; make -j 4; make install`
-  - Link to Google test is necessary
+  - `mkdir build; cd build; cmake .. ; make -j 4; make install`
+  - Link to Google test is necessary. Adjust CMakeLists.txt for the location of libraries
   - May download CuBLAS and LAPACK
   - Will use C++11 features
   - nvcc and gcc with v> 4.6 will be necessary
