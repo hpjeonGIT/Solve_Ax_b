@@ -27,7 +27,7 @@ void GPU_solver::run_cusolver(const int &nn, const std::vector<double> &Aex,
     double *d_A, *d_b, *d_Work; // Device memory, coeff .matrix, rhs, workspace
     int *d_pivot, *d_info, Lwork; // pivots, info, worksp. size
     int info_gpu = 0;
-// prepare memory on the host
+    // prepare memory on the host
     h_A_.resize(n*n);
     h_b_.resize(n);
     h_A_ = Aex;
@@ -38,22 +38,22 @@ void GPU_solver::run_cusolver(const int &nn, const std::vector<double> &Aex,
     cusolverStatus = cusolverDnCreate (&handle );
     // cusolverDnCreate seems to conflict with thrust::device_memory
     // 0118-2020 
-// prepare memory on the device
+    // prepare memory on the device
     checkCudaErrors(cudaMalloc(( void **)&d_A,     n*n* sizeof (double)));
     checkCudaErrors(cudaMalloc(( void **)&d_b,     n*   sizeof (double)));
     checkCudaErrors(cudaMalloc(( void **)&d_pivot, n*   sizeof (int)));
     checkCudaErrors(cudaMalloc(( void **)&d_info,       sizeof (int )));
     checkCudaErrors(cudaMemcpy(d_A,h_A_.data(),n*n*sizeof(double),
-			       cudaMemcpyHostToDevice)); 
+                    cudaMemcpyHostToDevice));
     checkCudaErrors(cudaMemcpy(d_b,h_b_.data(),n*  sizeof(double),
-			       cudaMemcpyHostToDevice));
+                    cudaMemcpyHostToDevice));
     //vvvvvvvvvvvvvvvvvvvvvvvv
     checkCudaErrors(cusolverDnDgetrf_bufferSize(handle,n,n,d_A,lda,&Lwork)); 
     checkCudaErrors(cudaMalloc (( void **)&d_Work , Lwork * sizeof (double)));
     clock_gettime ( CLOCK_REALTIME ,&start ); // timer start
     checkCudaErrors(cusolverDnDgetrf(handle,n,n,d_A,lda,d_Work,d_pivot,d_info));
     checkCudaErrors(cusolverDnDgetrs(handle, CUBLAS_OP_N, n, 1, d_A, lda,
-				     d_pivot, d_b, n, d_info));
+                    d_pivot, d_b, n, d_info));
     checkCudaErrors(cudaDeviceSynchronize());
     //^^^^^^^^^^^^^^^^^^
     clock_gettime ( CLOCK_REALTIME ,&stop ); // timer stop
@@ -61,11 +61,11 @@ void GPU_solver::run_cusolver(const int &nn, const std::vector<double> &Aex,
 	( stop.tv_nsec - start.tv_nsec )/( double ) BILLION ;
     //printf (" getrf + getrs time : %lf sec .\n",accum ); // print el. time
     checkCudaErrors(cudaMemcpy (&info_gpu, d_info, sizeof (int),
-				cudaMemcpyDeviceToHost )); // d_info -> info_gpu
+                    cudaMemcpyDeviceToHost )); // d_info -> info_gpu
     //printf (" after getrf + getrs : info_gpu = %d\n", info_gpu );
     checkCudaErrors(cudaMemcpy (h_b_.data(), d_b , n* sizeof (double) ,
-				cudaMemcpyDeviceToHost)); // 
-// free memory
+                    cudaMemcpyDeviceToHost)); //
+    // free memory
     checkCudaErrors(cudaFree (d_A));
     checkCudaErrors(cudaFree (d_b));
     checkCudaErrors(cudaFree (d_pivot));

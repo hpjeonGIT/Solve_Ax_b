@@ -13,23 +13,23 @@ int main(int argc, char** argv) {
     int method = 0;
     // method = 0; random, method=1, symm using 1..N
     for (auto n : test_list) {
-    	// make sample data
-    	if (method == 0){
-    		q.random_matrix(n);
-    	}
-		else {
-			q.sym_matrix(n);
-		}
-		// call CPU LAPACK
-    	csolver.run_lapack(n, q.return_A(), q.return_b());
-		x.resize(n);
-		csolver.deliver_result(x);
-		std::cout << x[0] << " lapack result" << std::endl;
-		// call GPU CuSolve
-		gsolver.run_cusolver(n, q.return_A(), q.return_b());
-		gsolver.deliver_result(x);
-		// print wall time
-		std::cout << x[0] << "  cusolver result" << std::endl;
-	}
+        // make sample data
+        if (method == 0){
+            q.random_matrix(n);
+        }
+        else {
+            q.sym_matrix(n);
+        }
+        // call CPU LAPACK
+        csolver.run_lapack(n, q.return_A(), q.return_b());
+        x.resize(n);
+        csolver.deliver_result(x);
+        std::cout << x[0] << " lapack result" << std::endl;
+        // call GPU CuSolve
+        gsolver.run_cusolver(n, q.return_A(), q.return_b());
+        gsolver.deliver_result(x);
+        // print wall time
+        std::cout << x[0] << "  cusolver result" << std::endl;
+    }
     return 0;
 }

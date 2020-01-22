@@ -18,11 +18,11 @@ private:
 };
 
 int Dataset::return_size_A(){
-	return A_.size();
+    return A_.size();
 }
 
 int Dataset::return_size_b(){
-	return b_.size();
+    return b_.size();
 }
 
 #endif /* SRC_MAIN_DATASET_H_ */

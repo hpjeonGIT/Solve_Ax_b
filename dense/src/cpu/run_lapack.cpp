@@ -12,25 +12,25 @@ extern "C" {
 
 void CPU_solver::run_lapack(const int &nn, const std::vector<double> &Aex,
 		const std::vector<double> &bex){
-	int n=nn,m;
-	int nrhs, lda, ldb, info;
-	std::vector<int> ipiv;
-	m = n;
-	nrhs = 1;
-	lda = std::max(1,n);
-	ldb = lda;
-	A_.resize(n*m);
-	b_.resize(n);
-	ipiv.resize(n);
-	A_ = Aex;
-	b_ = bex;
-	std::cout << "b0= " << b_[0] << std::endl;
-	// calculate eigenvalues using the DGEEV subroutine
-	dgesv_(&n, &nrhs, A_.data(), &lda, ipiv.data(), b_.data(), &ldb, &info);
-	// check for errors
-	if (info!=0){
-		std::cout << "Error: dgesv returned error code " << info << std::endl;
-	}
+    int n=nn,m;
+    int nrhs, lda, ldb, info;
+    std::vector<int> ipiv;
+    m = n;
+    nrhs = 1;
+    lda = std::max(1,n);
+    ldb = lda;
+    A_.resize(n*m);
+    b_.resize(n);
+    ipiv.resize(n);
+    A_ = Aex;
+    b_ = bex;
+    //std::cout << "b0= " << b_[0] << std::endl;
+    // calculate eigenvalues using the DGEEV subroutine
+    dgesv_(&n, &nrhs, A_.data(), &lda, ipiv.data(), b_.data(), &ldb, &info);
+    // check for errors
+    if (info!=0){
+        std::cout << "Error: dgesv returned error code " << info << std::endl;
+    }
 }
 
 void CPU_solver::deliver_result(std::vector<double> &x){
