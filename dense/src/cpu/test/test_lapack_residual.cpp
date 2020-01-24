@@ -24,7 +24,7 @@ TEST_F(LapackTest, testingResidual1) {
     A_ = {1., 0., 0., 1.};
     b_ = {1., 2.};
     b0_ = b_;
-    csolver.run_lapack(2, A_, b_);
+    csolver.run_symsolver(2, A_, b_);
     x_.resize(2);
     csolver.deliver_result(x_);
     double lsum;

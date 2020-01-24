@@ -22,7 +22,7 @@ protected:
 TEST_F(LapackTest, testingSimpleMatrix1) {
     A_ = {1., 0., 0., 1.};
     b_ = {1., 2.};
-    csolver.run_lapack(2, A_, b_);
+    csolver.run_symsolver(2, A_, b_);
     x_.resize(2);
     csolver.deliver_result(x_);
     EXPECT_EQ(x_[0], 1.);
@@ -32,7 +32,7 @@ TEST_F(LapackTest, testingSimpleMatrix1) {
 TEST_F(LapackTest, testingSimpleMatrix2) {
     A_ = {1., 0., 0., 2.};
     b_ = {1., 2.};
-    csolver.run_lapack(2, A_, b_);
+    csolver.run_symsolver(2, A_, b_);
     x_.resize(2);
     csolver.deliver_result(x_);
     EXPECT_EQ(x_[0], 1.);

@@ -13,23 +13,34 @@ int main(int argc, char** argv) {
     int method = 0;
     // method = 0; random, method=1, symm using 1..N
     for (auto n : test_list) {
+        std::cout << "matrix size = " << n << std::endl;
         // make sample data
         if (method == 0){
             q.random_matrix(n);
+            csolver.run_gensolver(n, q.return_A(), q.return_b());
+            x.resize(n);
+            csolver.deliver_result(x);
+            std::cout << " lapack result " << x[0] << std::endl;
+            // call GPU CuSolve
+            gsolver.run_cuda_gensolver(n, q.return_A(), q.return_b());
+            gsolver.deliver_result(x);
+            // print wall time
+            std::cout <<  "cusolver result " << x[0] << std::endl;
         }
         else {
             q.sym_matrix(n);
+            csolver.run_symsolver(n, q.return_A(), q.return_b());
+            x.resize(n);
+            csolver.deliver_result(x);
+            std::cout << " lapack result " << x[0] << std::endl;
+            // call GPU CuSolve
+            gsolver.run_cuda_symsolver(n, q.return_A(), q.return_b());
+            gsolver.deliver_result(x);
+            // print wall time
+            std::cout <<  "cusolver result " << x[0] << std::endl;
         }
         // call CPU LAPACK
-        csolver.run_lapack(n, q.return_A(), q.return_b());
-        x.resize(n);
-        csolver.deliver_result(x);
-        std::cout << x[0] << " lapack result" << std::endl;
-        // call GPU CuSolve
-        gsolver.run_cusolver(n, q.return_A(), q.return_b());
-        gsolver.deliver_result(x);
-        // print wall time
-        std::cout << x[0] << "  cusolver result" << std::endl;
+
     }
     return 0;
 }
