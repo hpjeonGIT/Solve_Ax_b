@@ -4,14 +4,20 @@
 ## Objectives
 - Solve Ax = b
 - Using HYPRE for CPU
-- Using CuSparse for GPU
+- Using Amgx for GPU
 - TBD: Compare performance - wall time, memory foot-print on each
 - Unit-tests for each src folder
+
+## Algebraic multigrid
+- Commonly multigrid method is used for structural grids - changing grid resolution along V or W cycles
+- Algebraic multigrid enables MG method on purely matrix - without physical grid systems 
+- Therefore, even unstructured grids or particle systems can use MG to solve their matrix equations
+- As there is no grid, Yair Shapira called this method as the algebraic multilevel method
 
 ## Steps to use
 - `cd sparse`
 - `mkdir build; cd build`
-- `cmake ..`
+- `cmake .. -DCMAKE_CXX_COMPILER=mpicxx`
 - `make -j 3`
 - `make install`
 - `./bin/sparse_solver` # Running the solver executable
@@ -48,3 +54,9 @@
 
 ```
 ```
+## Note for cuda libraries
+- CuBLAS for dense matrix operation such as matmul. No solver
+- CuSparse for sparse matrix operation such as matmul. No solver
+- CuSolver for solver. Both of dense and sparse matrices
+- MPI support for CuSolver is not yet
+- For distributed-GPU solver, AmgX is the only available option as of Q1-2020
