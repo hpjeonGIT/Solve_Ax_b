@@ -16,6 +16,21 @@
 - `make install`
 - `./bin/dense_solver` # Running the solver executable
 - `ctest` # For unit-test
+```
+Test project /home/hpjeon/hw/Ax_b/dense/build
+    Start 1: lapack1
+1/4 Test #1: lapack1 ..........................   Passed    0.05 sec
+    Start 2: lapack2
+2/4 Test #2: lapack2 ..........................   Passed    0.00 sec
+    Start 3: main1
+3/4 Test #3: main1 ............................   Passed    0.01 sec
+    Start 4: main2
+4/4 Test #4: main2 ............................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 4
+
+Total Test time (real) =   0.09 sec
+```
 
 ## Code structure
 ```
