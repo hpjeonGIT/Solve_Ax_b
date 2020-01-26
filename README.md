@@ -1,13 +1,22 @@
 # Code project
 - Solve Ax=b
-- A could be a dense or sparse matrix
-- For a dense matrix
+- A matrix A could be a dense or sparse matrix
+    - Symmetric or unsymmetric condition might be tested
+    - Random matrix for unsymmetric conditions
+- For a dense matrix of double-precision
     - LAPACK for CPU solver
+        - dgesv for general/unsymmetric matrices
+        - dsysv for symmetric matrices
     - CuSolver for GPU solver
-- For a sparse matrix
-    - HYPRE for CPU solver
-    - CUSP for GPU solver
+        - cusolverDnDgetrf for general/unsymmetric matrices
+        - cusolverDnDpotrf for symmetric matrices
+- For a sparse matrix using MPI
+    - HYPRE for distributed CPU solver
+        - Flexible GMRES solver + AMG preconditioner
+    - AmgX for distributed GPU solver
+        - FGMRES + AMG preconditioner
 - Objectives of the project
-    - Practice LAPACK/HYPRE/CuSolver/CUSP
+    - Practice LAPACK/HYPRE/CuSolver/AmgX
     - Practice of CMake with cuda
-    - Practice of unit-test using C++11
+    - Practice of unit-test using CTest
+    - Practice of C++11 or C++14 implementation
