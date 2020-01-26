@@ -80,15 +80,15 @@ int main(int argc, char **argv)
     n_global = 10;
     partition_vector = {0,0,0,0,  1,1,1, 2,2,2};
     if (myid == 0){
-     /*    10    8    0    0    0    0    0    0    0    0
-            7   10    8    0    0    0    0    0    0    0
+     /*    10    8    0    0    0    0    0    0    0    1
+            7   10    8    0    0    0    0    0    0    2
             0    7   10    8    0    0    0    0    0    0
             0    0    7   10    8    0    0    0    0    0 */
         local_size = 4;
-        data = {10., 8., 7., 10., 8., 7., 10., 8., 7., 10., 8.};
-        col_ind_global = {0, 1, 0, 1, 2, 1, 2, 3, 2, 3, 4};
-        row_ptr = {0, 2, 5, 8, 11};
-        nnz = 11;
+        data = {10., 8., 1., 7., 10., 8., 2., 7., 10., 8., 7., 10., 8.};
+        col_ind_global = {0, 1, 9, 0, 1, 2, 9, 1, 2, 3, 2, 3, 4};
+        row_ptr = {0, 3, 7, 10, 13};
+        nnz = 13;
         AMGX_matrix_upload_all_global(A, n_global, local_size, nnz, 1,1, &row_ptr[0],
                 &col_ind_global[0], &data[0], NULL, 2, 2, &partition_vector[0]);
         h_x = {0, 0, 0, 0};

@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
         std::vector<int> cols;
         int nnz;
         if (myid == 0){
-         /*    10    8    0    0    0    0    0    0    0    0
-                7   10    8    0    0    0    0    0    0    0
+         /*    10    8    0    0    0    0    0    0    0    1
+                7   10    8    0    0    0    0    0    0    2
                 0    7   10    8    0    0    0    0    0    0
                 0    0    7   10    8    0    0    0    0    0 */
-            values = {10., 8.}; cols = {0,1}; nnz = 2; n=0;
+            values = {10., 8., 1.}; cols = {0,1,9}; nnz = 3; n=0;
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {7., 10., 8.}; cols = {0,1,2}; nnz = 3; n=1;
+            values = {7., 10., 8., 2.}; cols = {0,1,2,9}; nnz = 4; n=1;
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
             values = {7., 10., 8.}; cols = {1,2,3}; nnz = 3; n=2;
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
