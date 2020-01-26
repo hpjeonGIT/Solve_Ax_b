@@ -1,8 +1,0 @@
-AMGX_LOG	RUNTIME_VERSION=10.1
-AMGX_LOG	Devicetype=device
-AMGX_LOG	Devicetype=host
-AMGX_LOG	Total Iterations=5
-AMGX_LOG	Total Time=0.0374057
-AMGX_LOG	Setup=0.000863232
-AMGX_LOG	Solve=0.0365425
-AMGX_LOG	Max Mem. Usage=1.33691
