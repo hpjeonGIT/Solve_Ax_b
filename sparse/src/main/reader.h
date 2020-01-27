@@ -17,7 +17,7 @@ class mtrx_reader{
 public:
     mtrx_reader() = default;
     ~mtrx_reader() = default;
-    void from_mtx(std::string const &fname, mtrx_csr &spdata,
+    void from_mtx(std::string const &fname, bool const &isSym, mtrx_csr &spdata,
             int const &myid, int const &num_procs);
 private:
 
