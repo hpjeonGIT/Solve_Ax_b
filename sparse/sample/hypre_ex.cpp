@@ -54,14 +54,14 @@ int main(int argc, char **argv) {
     HYPRE_IJMatrixInitialize(A);
     {
         std::vector<double> values;
-        std::vector<int> cols;
-        int nnz;
+        std::vector<int> cols, nnz_vec, row_vec;
+        int nnz, nrows;
         if (myid == 0){
          /*    10    8    0    0    0    0    0    0    0    0
                 8   10    8    0    0    0    0    0    0    0
                 0    8   10    8    0    0    0    0    0    0
                 0    0    8   10    8    0    0    0    0    0 */
-            values = {10., 8.}; cols = {0,1}; nnz = 2; n=0;
+        /*    values = {10., 8.}; cols = {0,1}; nnz = 2; n=0;
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
             values = {8., 10., 8.}; cols = {0,1,2}; nnz = 3; n=1;
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
@@ -69,7 +69,14 @@ int main(int argc, char **argv) {
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
             values = {8., 10., 8.}; cols = {2,3,4}; nnz = 3; n=3;
             HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-        } else if (myid == 1) {
+        */
+            values = {10.,8., 8.,10.,8., 8.,10.,8., 8.,10.,8.};
+            cols = {0,1,  0,1,2,  1,2,3,  2,3,4};
+            nnz_vec = {2, 3, 3, 3};
+            nrows = 4;
+            row_vec = {0,1,2,3};
+            HYPRE_IJMatrixSetValues(A, nrows, &nnz_vec[0], &row_vec[0], &cols[0], &values[0]);
+} else if (myid == 1) {
         /*  0    0    0    8   10    8    0    0    0    0
             0    0    0    0    8   10    8    0    0    0
             0    0    0    0    0    8   10    8    0    0 */
