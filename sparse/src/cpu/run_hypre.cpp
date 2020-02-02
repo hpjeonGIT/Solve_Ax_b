@@ -2,14 +2,13 @@
 #include <iostream>
 #include <vector>
 #include <mpi.h>
+#include "run_hypre.h"
 #include "_hypre_utilities.h"
 #include "HYPRE_krylov.h"
 #include "HYPRE.h"
 #include "HYPRE_parcsr_ls.h"
-#include "run_hypre.h"
-#include "main/reader.h"
 
-void HYPRE_solver::run_hypre(int const &myid, mtrx_scr const &spdata) {
+void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     int ilower, iupper, local_size;
     HYPRE_IJMatrix A;
     HYPRE_ParCSRMatrix parcsr_A;
@@ -20,52 +19,35 @@ void HYPRE_solver::run_hypre(int const &myid, mtrx_scr const &spdata) {
     HYPRE_Solver solver, precond;
     /* Default problem parameters */
     ilower = spdata.ilower_;
-    iuppper = spdata.iupper_;
+    iupper = spdata.iupper_;
     local_size = spdata.local_size_;
     HYPRE_IJMatrixCreate(MPI_COMM_WORLD, ilower, iupper, ilower, iupper, &A);
     // Note that this is for a symmetric matrix, ilower/iupper of row and ilower/iupper of column are same
     HYPRE_IJMatrixSetObjectType(A, HYPRE_PARCSR);
     HYPRE_IJMatrixInitialize(A);
-    {
-        std::vector<double> values;
-        std::vector<int> cols;
-        int nnz;
-        if (myid == 0){
-         /*    10    8    0    0    0    0    0    0    0    0
-                8   10    8    0    0    0    0    0    0    0
-                0    8   10    8    0    0    0    0    0    0
-                0    0    8   10    8    0    0    0    0    0 */
-            values = {10., 8.}; cols = {0,1}; nnz = 2; n=0;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10., 8.}; cols = {0,1,2}; nnz = 3; n=1;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10., 8.}; cols = {1,2,3}; nnz = 3; n=2;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10., 8.}; cols = {2,3,4}; nnz = 3; n=3;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-        } else if (myid == 1) {
-        /*  0    0    0    8   10    8    0    0    0    0
-            0    0    0    0    8   10    8    0    0    0
-            0    0    0    0    0    8   10    8    0    0 */
-            values = {8., 10., 8.}; cols = {3,4,5}; nnz = 3; n=4;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10., 8.}; cols = {4,5,6}; nnz = 3; n=5;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10., 8.}; cols = {5,6,7}; nnz = 3; n=6;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-        } else {// myid == 2
-       /*   0    0    0    0    0    0    8   10    8    0
-            0    0    0    0    0    0    0    8   10    8
-            0    0    0    0    0    0    0    0    8   10 */
-            values = {8., 10., 8.}; cols = {6,7,8}; nnz = 3; n=7;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10., 8.}; cols = {7,8,9}; nnz = 3; n=8;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-            values = {8., 10.};      cols = {8,9}; nnz = 2; n=9;
-            HYPRE_IJMatrixSetValues(A, 1, &nnz, &n, &cols[0], &values[0]);
-        }
-    }
+    HYPRE_IJMatrixSetValues(A, local_size, &spdata.nnz_v_[0], &spdata.rows_[0],
+            &spdata.colidx_[0], &spdata.values_[0]);
     HYPRE_IJMatrixAssemble(A);
+    /*
+    for (int i=0; i< spdata.rows_.size(); i++ ) {
+    std::cout << " rows_ " << spdata.rows_[i] ;
+    }
+    for (int i=0; i< spdata.colidx_.size(); i++ ) {
+    std::cout << " coldix_ " << spdata.colidx_[i] ;
+    }
+    for (int i=0; i< spdata.nnz_v_.size(); i++ ) {
+    std::cout << " nnz_v_ " << spdata.nnz_v_[i] ;
+    }
+    for (int i=0; i< b_v.rows_.size(); i++ ) {
+        std::cout << " b_v.rows_ " << b_v.rows_[i] << " " << b_v.values_[i] << std::endl;
+        }
+*/
+/*  10  8 0 0
+ *   8 10 8 0
+ *   0 8 10 8
+ *   0 0 8 10
+ */
+
 //       HYPRE_IJMatrixPrint(A, "IJ.out.A");
 //       HYPRE_IJVectorPrint(b, "IJ.out.b");
     HYPRE_IJMatrixGetObject(A, (void**) &parcsr_A);
@@ -76,23 +58,10 @@ void HYPRE_solver::run_hypre(int const &myid, mtrx_scr const &spdata) {
     HYPRE_IJVectorSetObjectType(x, HYPRE_PARCSR);
     HYPRE_IJVectorInitialize(x);
     // Configuration of RHS
-    std::vector<double> rhs_values(local_size), x_values(local_size, 0.0);
-    std::vector<int> rows(local_size);
-    rhs_values = {};
-    // b = [1    2    3    4    5    6    7    8    9   10]
-    if (myid == 0) {
-        rhs_values = {1., 2., 3., 4.};
-        rows = {0, 1, 2, 3};
-    } else if (myid == 1) {
-        rhs_values = {5., 6., 7.};
-        rows = {4, 5, 6};
-    } else { // myid ==2
-        rhs_values = {8., 9., 10.};
-        rows = {7, 8, 9};
-    }
-    HYPRE_IJVectorSetValues(b, local_size, &rows[0], &rhs_values[0]);
-    HYPRE_IJVectorSetValues(x, local_size, &rows[0], &x_values[0]);
-    rhs_values.clear();
+    x_values_.resize(b_v.rows_.size(), 0.0);
+    HYPRE_IJVectorSetValues(b, b_v.rows_.size(), &b_v.rows_[0], &b_v.values_[0]);
+    HYPRE_IJVectorSetValues(x, b_v.rows_.size(), &b_v.rows_[0], &x_values_[0]);
+    //b_v.values_.clear();
     HYPRE_IJVectorAssemble(b);
     HYPRE_IJVectorGetObject(b, (void **) &par_b);
     HYPRE_IJVectorAssemble(x);
@@ -104,7 +73,7 @@ void HYPRE_solver::run_hypre(int const &myid, mtrx_scr const &spdata) {
     int    modify = 1;
     HYPRE_ParCSRFlexGMRESCreate(MPI_COMM_WORLD, &solver);
     HYPRE_FlexGMRESSetKDim(solver, restart);
-    HYPRE_FlexGMRESSetMaxIter(solver, 1000); /* max iterations */
+    HYPRE_FlexGMRESSetMaxIter(solver, 10); /* max iterations */
     HYPRE_FlexGMRESSetTol(solver, 1e-7); /* conv. tolerance */
     HYPRE_FlexGMRESSetPrintLevel(solver, 2); /* print solve info */
     HYPRE_FlexGMRESSetLogging(solver, 1); /* needed to get run info later */
@@ -130,16 +99,20 @@ void HYPRE_solver::run_hypre(int const &myid, mtrx_scr const &spdata) {
     }
     HYPRE_ParCSRFlexGMRESDestroy(solver);
     HYPRE_BoomerAMGDestroy(precond);
-    HYPRE_IJVectorGetValues(x, local_size, &rows[0], &x_values[0]);
+    HYPRE_IJVectorGetValues(x, b_v.rows_.size(), &b_v.rows_[0], &x_values_[0]);
+
     HYPRE_IJMatrixDestroy(A);
     HYPRE_IJVectorDestroy(b);
     HYPRE_IJVectorDestroy(x);
     std::cout << "myid = " << myid << " x= ";
     for (int i=0; i< local_size;i++) {
-        std::cout << x_values[i] << " ";
+        std::cout << x_values_[i] << " ";
     }
     std::cout << std::endl;
-      /* Finalize MPI*/
-    MPI_Finalize();
-    return(0);
+}
+
+
+void HYPRE_solver::get_result(std::vector<double> &x){
+    x.resize(x_values_.size());
+    x = x_values_;
 }

@@ -1,7 +1,7 @@
 project(SparseSolver CXX CUDA)
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions(-std=c++11)
+add_definitions(-std=c++14)
 find_package(CUDA REQUIRED)
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -30,5 +30,8 @@ add_subdirectory(src/main)
 # Ref: https://stackoverflow.com/questions/6352123/multiple-directories-under-cmake
 #https://gitlab.com/CLIUtils/modern-cmake/tree/master/examples/extended-project
 # data file copy
+file(COPY ${CMAKE_SOURCE_DIR}/data/simple.mtx ${CMAKE_SOURCE_DIR}/data/simple.mtx
+     DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/data/685_bus.mtx ${CMAKE_SOURCE_DIR}/data/1138_bus.mtx
      DESTINATION ${CMAKE_BINARY_DIR})
+     
