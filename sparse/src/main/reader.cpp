@@ -12,7 +12,7 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
     std::ifstream file_obj;
     file_obj.open(fname, std::ios::in);
     bool afterheader=false;
-    int nrow, ncol, nnz_local;
+    int nrow, ncol, nnz_local, ntmp;
     double val;
 
     struct rcv{
@@ -42,7 +42,6 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
                 afterheader = true;
                 std::stringstream stream(line);
                 stream >> spdata.global_size_; stream >> spdata.global_size_;
-                int ntmp;
                 stream >> ntmp; // when MM is symmetric, this is not real nnz_sum. Symm part only.
                 spdata.local_size_ = static_cast<int>(round(spdata.global_size_/num_procs));
                 spdata.ilower_ = myid*spdata.local_size_;
@@ -121,11 +120,19 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
            }
            //spdata.rows_.push_back(nrow);
            spdata.colidx_.push_back(ncol);
+           spdata.g_colidx_.push_back(ncol);
            spdata.values_.push_back(val);
            spdata.nnz_++;
         }
    }
    spdata.nnz_v_.push_back(nnz_local); // update of the last element
+   // nnz_v_ for HYPRE. AMGX uses row_ptr
+   spdata.row_ptr_.push_back(0);
+   ntmp = 0;
+   for (int i=0;i<spdata.nnz_v_.size(); i++){
+       ntmp += spdata.nnz_v_[i];
+       spdata.row_ptr_.push_back(ntmp);
+   }
 
    for (int i=0; i<spdata.nnz_v_.size();i++) {
        std::cout << myid << "nnz_v" << spdata.nnz_v_[i] << std::endl;

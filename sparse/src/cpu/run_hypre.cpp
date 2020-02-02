@@ -67,7 +67,7 @@ void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     HYPRE_IJVectorAssemble(x);
     HYPRE_IJVectorGetObject(x, (void **) &par_x);
     // FGMRES + AMG preconditioner
-    int    num_iterations;
+    HYPRE_Int    num_iterations;
     double final_res_norm;
     int    restart = 30;
     int    modify = 1;
