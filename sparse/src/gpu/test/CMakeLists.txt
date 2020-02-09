@@ -1,0 +1,23 @@
+include_directories(${GTEST_HOME}/include)
+include_directories(${CMAKE_SOURCE_DIR}/src)
+link_directories(${GTEST_HOME}/lib)
+#
+add_executable(test_sym_amgx     test_sym_matrix.cpp)
+add_executable(test_unsym_amgx   test_unsym_matrix.cpp)
+target_link_libraries(test_sym_amgx     reader_lib gpu_lib gtest pthread)
+target_link_libraries(test_unsym_amgx   reader_lib gpu_lib gtest pthread)
+#
+add_test(NAME amgx_sym_rank1     COMMAND "mpirun" "-n" 1 "test_sym_amgx")
+add_test(NAME amgx_sym_rank2     COMMAND "mpirun" "-n" 2 "test_sym_amgx")
+add_test(NAME amgx_sym_rank3     COMMAND "mpirun" "-n" 3 "test_sym_amgx")
+add_test(NAME amgx_unsym_rank1   COMMAND "mpirun" "-n" 1 "test_unsym_amgx")
+add_test(NAME amgx_unsym_rank2   COMMAND "mpirun" "-n" 2 "test_unsym_amgx")
+add_test(NAME amgx_unsym_rank3   COMMAND "mpirun" "-n" 3 "test_unsym_amgx")
+#
+set(input_data
+    sym10.mtx
+    unsym10.mtx
+)
+foreach(input1 ${input_data})
+    file(COPY ${input1} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endforeach()

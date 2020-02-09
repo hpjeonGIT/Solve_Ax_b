@@ -126,3 +126,9 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
     AMGX_SAFE_CALL(AMGX_finalize())
     CUDA_SAFE_CALL(cudaDeviceReset());
 }
+
+void AMGX_solver::get_result(std::vector<double> &x){
+    x.resize(x_values_.size());
+    x = x_values_;
+}
+

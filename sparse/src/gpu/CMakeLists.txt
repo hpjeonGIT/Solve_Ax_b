@@ -4,4 +4,4 @@ target_link_libraries(gpu_lib -L${CUDA_ROOT}/lib64 -lcudart -L${AMGX_ROOT}/lib -
 include_directories(${AMGX_ROOT}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 # For unit-test
-#add_subdirectory(test)
+add_subdirectory(test)

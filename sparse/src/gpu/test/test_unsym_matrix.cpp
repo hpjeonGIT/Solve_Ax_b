@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "mpi.h"
 #include "main/reader.h"
-#include "cpu/run_hypre.h"
+#include "gpu/run_amgx.h"
 
 
 class TestUnSymSolver : public ::testing::Test {
@@ -20,16 +20,16 @@ protected:
     }
 };
 
-TEST_F(TestUnSymSolver, testingUnSymHYPRE) {
+TEST_F(TestUnSymSolver, testingUnSymAMGX) {
     mtrx_reader parsor;
     mtrx_csr spdata;
     rhs  b_v;
     parsor.from_mtx("unsym10.mtx", false, spdata, myid, num_procs);
-    HYPRE_solver cpusolver;
+    AMGX_solver gpusolver;
     parsor.set_b(spdata, b_v, myid, num_procs);
-    cpusolver.run_hypre(spdata, b_v, myid);
+    gpusolver.run_amgx(spdata, b_v, myid, num_procs);
     std::vector<double> x(spdata.local_size_,0);
-    cpusolver.get_result(x);
+    gpusolver.get_result(x);
     std::vector<int> ncount(num_procs,0), ndisp(num_procs,0);
     std::vector<double> x_all(spdata.global_size_,0);
     MPI_Allgather(&spdata.local_size_,1, MPI_INT,
