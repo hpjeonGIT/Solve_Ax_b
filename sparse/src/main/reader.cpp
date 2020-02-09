@@ -133,11 +133,11 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
        ntmp += spdata.nnz_v_[i];
        spdata.row_ptr_.push_back(ntmp);
    }
-
+/*
    for (int i=0; i<spdata.nnz_v_.size();i++) {
        std::cout << myid << "nnz_v" << spdata.nnz_v_[i] << std::endl;
    }
-
+*/
    //std::cout << "myid=" << myid << " " << nnz_ << " " << values_.size() << std::endl;
    if (spdata.values_.size() != spdata.nnz_) {
        std::cout << "something is wrong. nnz sum doesn't match \n";

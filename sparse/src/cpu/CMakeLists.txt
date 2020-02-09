@@ -4,5 +4,5 @@ target_link_libraries(cpu_lib -L${HYPRE_ROOT}/lib -lHYPRE)
 include_directories(${HYPRE_ROOT}/include)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 # For unit-test
-#add_subdirectory(test)
+add_subdirectory(test)
 
