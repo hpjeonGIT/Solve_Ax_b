@@ -18,18 +18,22 @@
 - `ctest` # For unit-test
 ```
 Test project /home/hpjeon/hw/Ax_b/dense/build
-    Start 1: lapack1
-1/4 Test #1: lapack1 ..........................   Passed    0.05 sec
-    Start 2: lapack2
-2/4 Test #2: lapack2 ..........................   Passed    0.00 sec
-    Start 3: main1
-3/4 Test #3: main1 ............................   Passed    0.01 sec
-    Start 4: main2
-4/4 Test #4: main2 ............................   Passed    0.00 sec
+    Start 1: lapack_test_simple
+1/6 Test #1: lapack_test_simple ...............   Passed    0.00 sec
+    Start 2: lapack_test_residual
+2/6 Test #2: lapack_test_residual .............   Passed    0.00 sec
+    Start 3: cusolver_test_simple
+3/6 Test #3: cusolver_test_simple .............   Passed    0.94 sec
+    Start 4: cusolver_test_residual
+4/6 Test #4: cusolver_test_residual ...........   Passed    0.62 sec
+    Start 5: dataset_test_size
+5/6 Test #5: dataset_test_size ................   Passed    0.01 sec
+    Start 6: dataset_test_return
+6/6 Test #6: dataset_test_return ..............   Passed    0.00 sec
 
-100% tests passed, 0 tests failed out of 4
+100% tests passed, 0 tests failed out of 6
 
-Total Test time (real) =   0.09 sec
+Total Test time (real) =   1.58 sec
 ```
 
 ## Code structure

@@ -7,6 +7,7 @@
 #include "run_amgx.h"
 #include "cuda_runtime.h"
 #include "amgx_c.h"
+#define BILLION 1000000000L ;
 
 /* CUDA error macro */
 #define CUDA_SAFE_CALL(call) do {                                 \
@@ -26,6 +27,10 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
     std::vector<double> h_x, h_b, data;
     std::vector<int> row_ptr;
     std::vector<long> col_ind_global;
+    struct timespec start, stop;
+    size_t free_t,total_t;
+    double accum ; // elapsed time variable
+    float free_m,total_m,used_m;
 
     MPI_Comm amgx_mpi_comm = MPI_COMM_WORLD;
     AMGX_Mode mode;
@@ -58,6 +63,7 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
         std::cout << "counted number = " << niter << std::endl;
         throw;
     }
+#ifndef NDEBUG
     for (int i=0; i< spdata.row_ptr_.size(); i++ ) {
     std::cout << " rows_ " << spdata.row_ptr_[i] ;
     }
@@ -73,7 +79,7 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
     for (int i=0; i< partition_vector.size(); i++ ) {
         std::cout << myid <<" partition_vector " << partition_vector[i] << std::endl;
     }
-
+#endif
 
     AMGX_SAFE_CALL(AMGX_initialize());
     AMGX_SAFE_CALL(AMGX_initialize_plugins());
@@ -108,7 +114,21 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
     AMGX_vector_upload(x, spdata.local_size_, 1, &x_values_[0]);
     AMGX_vector_upload(b, spdata.local_size_, 1, &b_v.values_[0]);
     AMGX_solver_setup(solver, A);
+    // solver below
+    clock_gettime ( CLOCK_REALTIME ,&start );
     AMGX_solver_solve(solver, b, x);
+    clock_gettime ( CLOCK_REALTIME ,&stop ); // timer stop
+    accum =( stop.tv_sec - start.tv_sec )+ // elapsed time
+    ( stop.tv_nsec - start.tv_nsec )/( double ) BILLION ;
+    cudaMemGetInfo(&free_t,&total_t);
+    free_m =(uint)free_t/1024./1024. ;
+    total_m=(uint)total_t/1024./1024.;
+    used_m=total_m-free_m;
+    if (myid == 0) {
+        std::cout << "AMGX solver took " << accum << "sec\n";
+        std::cout << "Used GPU mem=" << used_m << " MB. Free GPU mem=" << free_m << " MB\n";
+    }
+    // solver above
     AMGX_solver_get_status(solver, &status);
     AMGX_vector_download(x, &x_values_[0]);
     // print result_host
@@ -125,6 +145,8 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
     AMGX_SAFE_CALL(AMGX_finalize_plugins())
     AMGX_SAFE_CALL(AMGX_finalize())
     CUDA_SAFE_CALL(cudaDeviceReset());
+
+
 }
 
 void AMGX_solver::get_result(std::vector<double> &x){

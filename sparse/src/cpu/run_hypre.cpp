@@ -1,6 +1,8 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <sys/resource.h>
+#include <chrono>
 #include <mpi.h>
 #include "run_hypre.h"
 #include "_hypre_utilities.h"
@@ -88,14 +90,22 @@ void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     HYPRE_FlexGMRESSetPrecond(solver, (HYPRE_PtrToSolverFcn) HYPRE_BoomerAMGSolve,
                         (HYPRE_PtrToSolverFcn) HYPRE_BoomerAMGSetup, precond);
     HYPRE_ParCSRFlexGMRESSetup(solver, parcsr_A, par_b, par_x);
+    // solver below
+    struct rusage usage;
+    auto start = std::chrono::system_clock::now();
+    getrusage(RUSAGE_SELF, &usage);
     HYPRE_ParCSRFlexGMRESSolve(solver, parcsr_A, par_b, par_x);
+    getrusage(RUSAGE_SELF, &usage);
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    // solver above
     HYPRE_FlexGMRESGetNumIterations(solver, &num_iterations);
     HYPRE_FlexGMRESGetFinalRelativeResidualNorm(solver, &final_res_norm);
     if (myid == 0)    {
-       printf("\n");
-       printf("Iterations = %d\n", num_iterations);
-       printf("Final Relative Residual Norm = %e\n", final_res_norm);
-       printf("\n");
+       std::cout << "\n" << "Iterations = " <<  num_iterations << std::endl;
+       std::cout << "Final Relative Residual Norm = " << final_res_norm << std::endl;
+       std::cout << "Allocated mem at 0rank =" << usage.ru_maxrss/1024 << " MB\n";
+       std::cout << "Elapsed time = " << elapsed_seconds.count() << "sec\n";
     }
     HYPRE_ParCSRFlexGMRESDestroy(solver);
     HYPRE_BoomerAMGDestroy(precond);

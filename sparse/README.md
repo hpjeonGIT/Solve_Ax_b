@@ -23,7 +23,49 @@
 - `make install`
 - `mpirun -n 3 ./bin/sparse_solver` # Running the solver executable
 - `ctest` # For unit-test
+```
+Test project /home/hpjeon/hw/Ax_b/sparse/build
+      Start  1: hypre_sym_rank1
+ 1/18 Test  #1: hypre_sym_rank1 ..................   Passed    0.03 sec
+      Start  2: hypre_sym_rank2
+ 2/18 Test  #2: hypre_sym_rank2 ..................   Passed    0.04 sec
+      Start  3: hypre_sym_rank3
+ 3/18 Test  #3: hypre_sym_rank3 ..................   Passed    0.04 sec
+      Start  4: hypre_unsym_rank1
+ 4/18 Test  #4: hypre_unsym_rank1 ................   Passed    0.03 sec
+      Start  5: hypre_unsym_rank2
+ 5/18 Test  #5: hypre_unsym_rank2 ................   Passed    0.03 sec
+      Start  6: hypre_unsym_rank3
+ 6/18 Test  #6: hypre_unsym_rank3 ................   Passed    0.04 sec
+      Start  7: amgx_sym_rank1
+ 7/18 Test  #7: amgx_sym_rank1 ...................   Passed    1.62 sec
+      Start  8: amgx_sym_rank2
+ 8/18 Test  #8: amgx_sym_rank2 ...................   Passed    1.81 sec
+      Start  9: amgx_sym_rank3
+ 9/18 Test  #9: amgx_sym_rank3 ...................   Passed    2.47 sec
+      Start 10: amgx_unsym_rank1
+10/18 Test #10: amgx_unsym_rank1 .................   Passed    1.61 sec
+      Start 11: amgx_unsym_rank2
+11/18 Test #11: amgx_unsym_rank2 .................   Passed    1.84 sec
+      Start 12: amgx_unsym_rank3
+12/18 Test #12: amgx_unsym_rank3 .................   Passed    2.69 sec
+      Start 13: reader_sym_rank1
+13/18 Test #13: reader_sym_rank1 .................   Passed    0.02 sec
+      Start 14: reader_sym_rank2
+14/18 Test #14: reader_sym_rank2 .................   Passed    0.03 sec
+      Start 15: reader_sym_rank3
+15/18 Test #15: reader_sym_rank3 .................   Passed    0.04 sec
+      Start 16: reader_unsym_rank1
+16/18 Test #16: reader_unsym_rank1 ...............   Passed    0.03 sec
+      Start 17: reader_unsym_rank2
+17/18 Test #17: reader_unsym_rank2 ...............   Passed    0.03 sec
+      Start 18: reader_unsym_rank3
+18/18 Test #18: reader_unsym_rank3 ...............   Passed    0.06 sec
 
+100% tests passed, 0 tests failed out of 18
+
+Total Test time (real) =  12.45 sec
+```
 ## Code structure
 ```
 └── src
@@ -42,7 +84,7 @@
 - Vector b is given arbitrarily
 - Wil solve Ax=b, printing x vector as results
 
-## CuSparse sample code
+## AMGX sample code for solving a sparse matrix
 ```
 #include <cstdio>
 #include <cstdlib>
@@ -199,7 +241,7 @@ int main(int argc, char **argv)
 }
 ```
 
-## HYPRE sample code
+## HYPRE sample code for solving a sparse matrix
 ```
 /*
  * Command to run
