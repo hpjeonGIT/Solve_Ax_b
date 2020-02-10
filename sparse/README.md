@@ -5,7 +5,7 @@
 - Solve Ax = b
 - Using HYPRE for CPU
 - Using Amgx for GPU
-- TBD: Compare performance - wall time, memory foot-print on each
+- Compare performance - wall time, memory foot-print on each
 - Unit-tests for each src folder
 
 ## Algebraic multigrid
@@ -83,6 +83,42 @@ Total Test time (real) =  12.45 sec
 - simple4.mtx and simple10.mtx are toy matices, and you may copy to simple.mtx
 - Vector b is given arbitrarily
 - Wil solve Ax=b, printing x vector as results
+
+## Profiling
+- For CPU computing
+    - Use chrono for wall time or elapsed time
+    - Use rusage for memory check 
+```
+struct rusage usage;
+auto start = std::chrono::system_clock::now();
+getrusage(RUSAGE_SELF, &usage);
+// do something here
+getrusage(RUSAGE_SELF, &usage);
+auto end = std::chrono::system_clock::now();
+std::chrono::duration<double> elapsed_seconds = end-start;
+// print elapsed time and consumed memory
+std::cout << "##Final Relative Residual Norm = " << final_res_norm << std::endl;
+std::cout << "##Allocated mem at 0rank = " << usage.ru_maxrss/1024 << " MB\n";
+std::cout << "##Elapsed time = " << elapsed_seconds.count() << "sec\n";
+```
+- For CUDA or GPU computing
+```
+#define BILLION 1000000000L ;
+struct timespec start, stop;
+size_t free_t,total_t;
+double accum ; 
+float free_m,total_m,used_m;
+clock_gettime ( CLOCK_REALTIME ,&start );
+// do something here
+clock_gettime ( CLOCK_REALTIME ,&stop );
+accum =(stop.tv_sec - start.tv_sec) + (stop.tv_nsec - start.tv_nsec)/(double) BILLION;
+cudaMemGetInfo(&free_t,&total_t);
+free_m =(uint)free_t/1024./1024. ;
+total_m=(uint)total_t/1024./1024.;
+// print elapsed time and consumed GPU memory
+std::cout << "AMGX solver took " << accum << "sec\n";
+std::cout << "Used GPU mem=" << used_m << " MB. Free GPU mem=" << free_m << " MB\n";
+```
 
 ## AMGX sample code for solving a sparse matrix
 ```

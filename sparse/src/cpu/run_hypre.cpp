@@ -102,10 +102,10 @@ void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     HYPRE_FlexGMRESGetNumIterations(solver, &num_iterations);
     HYPRE_FlexGMRESGetFinalRelativeResidualNorm(solver, &final_res_norm);
     if (myid == 0)    {
-       std::cout << "\n" << "Iterations = " <<  num_iterations << std::endl;
-       std::cout << "Final Relative Residual Norm = " << final_res_norm << std::endl;
-       std::cout << "Allocated mem at 0rank =" << usage.ru_maxrss/1024 << " MB\n";
-       std::cout << "Elapsed time = " << elapsed_seconds.count() << "sec\n";
+       std::cout << "\n" << "##Iterations = " <<  num_iterations << std::endl;
+       std::cout << "##Final Relative Residual Norm = " << final_res_norm << std::endl;
+       std::cout << "##Allocated mem at 0rank = " << usage.ru_maxrss/1024 << " MB\n";
+       std::cout << "##Elapsed time = " << elapsed_seconds.count() << "sec\n";
     }
     HYPRE_ParCSRFlexGMRESDestroy(solver);
     HYPRE_BoomerAMGDestroy(precond);
