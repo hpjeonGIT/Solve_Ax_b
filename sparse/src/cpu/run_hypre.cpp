@@ -30,7 +30,7 @@ void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     HYPRE_IJMatrixSetValues(A, local_size, &spdata.nnz_v_[0], &spdata.rows_[0],
             &spdata.colidx_[0], &spdata.values_[0]);
     HYPRE_IJMatrixAssemble(A);
-    /*
+#ifndef NDEBUG
     for (int i=0; i< spdata.rows_.size(); i++ ) {
     std::cout << " rows_ " << spdata.rows_[i] ;
     }
@@ -43,12 +43,7 @@ void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     for (int i=0; i< b_v.rows_.size(); i++ ) {
         std::cout << " b_v.rows_ " << b_v.rows_[i] << " " << b_v.values_[i] << std::endl;
         }
-*/
-/*  10  8 0 0
- *   8 10 8 0
- *   0 8 10 8
- *   0 0 8 10
- */
+#endif
 
 //       HYPRE_IJMatrixPrint(A, "IJ.out.A");
 //       HYPRE_IJVectorPrint(b, "IJ.out.b");
@@ -114,11 +109,13 @@ void HYPRE_solver::run_hypre(mtrx_csr &spdata, rhs &b_v, int const &myid) {
     HYPRE_IJMatrixDestroy(A);
     HYPRE_IJVectorDestroy(b);
     HYPRE_IJVectorDestroy(x);
+#ifndef NDEBUG
     std::cout << "myid = " << myid << " x= ";
     for (int i=0; i< local_size;i++) {
         std::cout << x_values_[i] << " ";
     }
     std::cout << std::endl;
+#endif
 }
 
 

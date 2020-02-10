@@ -20,8 +20,8 @@ int main(int argc, char** argv) {
     HYPRE_solver cpusolver;
     AMGX_solver gpusolver;
     std::vector<double> x;
-    std::vector<std::string> file_list = {"simple.mtx"} ;//, "685_bus.mtx"}; //, "1138_bus.mtx"};
-    std::vector<bool> symm_list = {true} ;//, true};
+    std::vector<std::string> file_list = {"simple.mtx", "685_bus.mtx", "1138_bus.mtx"};
+    std::vector<bool> symm_list = {true, true, true};
     for (int i=0; i <  file_list.size(); i++) {
         auto fname = file_list[i];
         auto isSym = symm_list[i];
@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
         cpusolver.get_result(x);
         gpusolver.run_amgx(spdata, b_v, myid, num_procs);
         x.resize(spdata.local_size_);
+        parsor.clear(spdata, b_v);
     }
-    std::cout << "myid =" << myid << " nnz = " << spdata.nnz_ << std::endl;
     MPI_Finalize();
     return 0;
 }

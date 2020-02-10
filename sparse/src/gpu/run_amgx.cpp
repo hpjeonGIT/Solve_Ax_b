@@ -125,17 +125,19 @@ void AMGX_solver::run_amgx(mtrx_csr &spdata, rhs &b_v, int const &myid,
     total_m=(uint)total_t/1024./1024.;
     used_m=total_m-free_m;
     if (myid == 0) {
-        std::cout << "AMGX solver took " << accum << "sec\n";
+        std::cout << "Elapsed time in AMGX = " << accum << "sec\n";
         std::cout << "Used GPU mem=" << used_m << " MB. Free GPU mem=" << free_m << " MB\n";
     }
     // solver above
     AMGX_solver_get_status(solver, &status);
     AMGX_vector_download(x, &x_values_[0]);
     // print result_host
+#ifndef NDEBUG
     std::cout << "myid = " << myid << " x=";
     for (int i=0; i < spdata.local_size_; i++)
             std::cout << " " << x_values_[i];
     std::cout << std::endl;
+#endif
     AMGX_solver_destroy(solver);
     AMGX_vector_destroy(x);
     AMGX_vector_destroy(b);

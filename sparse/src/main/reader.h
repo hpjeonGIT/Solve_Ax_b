@@ -54,6 +54,7 @@ public:
     void from_mtx(std::string const &fname, bool const &isSym, mtrx_csr &spdata,
             int const &myid, int const &num_procs);
     void set_b(mtrx_csr const &spdata, rhs &b_v, int const &myid, int const &num_procs);
+    void clear(mtrx_csr &spdata, rhs &b_v);
 private:
 };
 

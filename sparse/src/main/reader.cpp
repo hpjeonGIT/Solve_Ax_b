@@ -52,18 +52,16 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
                 spdata.local_size_ = spdata.iupper_ - spdata.ilower_ + 1;
                 std::cout << "myid=" << myid << " data range " << spdata.ilower_ << " "
                         << spdata.iupper_ << std::endl;
-                spdata.nnz_ = 0;
-                spdata.nnz_sum_ = 0;
             }
         }
         file_obj.close();
     }
 
-    /*
+#ifndef NDEBUG
     for (int i=0; i<rowsort.size();i++) {
         std::cout << "rowsor" << rowsort[i].row << " " << rowsort[i].col << " " << rowsort[i].val << std::endl;
     }
-    */
+#endif
 // sorting for CSR format
     std::sort(rowsort.begin(), rowsort.end(),
           [](const auto& i, const auto& j) { return i.row < j.row; } );
@@ -103,7 +101,7 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
    // Now rowsort has contiguous/ascending order of row/colindx data
    // Slice CSR data onto each domain of MPI rank
    nrow0 = spdata.ilower_ - 1; int nrow1 = nrow0 + 1;
-   nnz_local = 0;
+   nnz_local = 0; spdata.nnz_ = 0;
    for (int i=0; i<rowsort.size()-1; i++) {
        nrow = rowsort[i].row; ncol = rowsort[i].col; val = rowsort[i].val;
        if (nrow >= spdata.ilower_ && nrow <= spdata.iupper_) {
@@ -133,16 +131,16 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
        ntmp += spdata.nnz_v_[i];
        spdata.row_ptr_.push_back(ntmp);
    }
-/*
+#ifndef NDEBUG
    for (int i=0; i<spdata.nnz_v_.size();i++) {
        std::cout << myid << "nnz_v" << spdata.nnz_v_[i] << std::endl;
    }
-*/
-   //std::cout << "myid=" << myid << " " << nnz_ << " " << values_.size() << std::endl;
+   std::cout << "myid=" << myid << " " << nnz_ << " " << values_.size() << std::endl;
+#endif
    if (spdata.values_.size() != spdata.nnz_) {
        std::cout << "something is wrong. nnz sum doesn't match \n";
        std::cout << "number of values =" << spdata.values_.size() << std::endl;
-       std::cout << "nnz_ =" << spdata.nnz_ << std::endl;
+       std::cout << "myid = "<< myid << " nnz_ =" << spdata.nnz_ << std::endl;
        throw;
    }
    if (std::accumulate(spdata.nnz_v_.begin(), spdata.nnz_v_.end(),0)
@@ -153,7 +151,7 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
    int nnz_sum;
    MPI_Allreduce(&spdata.nnz_, &nnz_sum, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
    if (nnz_sum != spdata.nnz_sum_ ) {
-       std::cout << "something is wrong. sum of nnz_ doesn't match \n";
+       std::cout << "something is wrong. sum of nnz_ doesn't match3 \n";
        std::cout << "number of nnz_sum =" << nnz_sum << std::endl;
        std::cout << "nnz_sum from parsing" << spdata.nnz_sum_ << std::endl;
        throw;
@@ -166,6 +164,24 @@ void mtrx_reader::set_b(mtrx_csr const &spdata, rhs &b_v,
     b_v.values_.resize(spdata.local_size_,0.0);
     for (int i = 0; i < spdata.local_size_; i++) {
         b_v.rows_[i] = i + spdata.ilower_;
-        b_v.values_[i] = static_cast<double> (b_v.rows_[i] + 1);
+        b_v.values_[i] = 1.0; //static_cast<double> (b_v.rows_[i] + 1);
     }
+}
+
+
+void mtrx_reader::clear(mtrx_csr &spdata, rhs &b_v){
+    spdata.values_.clear();
+    spdata.colidx_.clear();
+    spdata.rows_.clear();
+    spdata.nnz_v_.clear();
+    spdata.row_ptr_.clear();
+    spdata.g_colidx_.clear();
+    spdata.local_size_ = 0;
+    spdata.global_size_ = 0;
+    spdata.nnz_sum_ = 0;
+    spdata.ilower_ = 0;
+    spdata.iupper_ = 0;
+    spdata.nnz_ = 0;
+    b_v.values_.clear();
+    b_v.rows_.clear();
 }
