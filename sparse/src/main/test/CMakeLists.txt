@@ -13,6 +13,13 @@ add_test(NAME reader_sym_rank3   COMMAND "mpirun" "-n" 3 "test_read_sym_mtx")
 add_test(NAME reader_unsym_rank1 COMMAND "mpirun" "-n" 1 "test_read_unsym_mtx")
 add_test(NAME reader_unsym_rank2 COMMAND "mpirun" "-n" 2 "test_read_unsym_mtx")
 add_test(NAME reader_unsym_rank3 COMMAND "mpirun" "-n" 3 "test_read_unsym_mtx")
+set_tests_properties(reader_sym_rank1 PROPERTIES LABELS reader_test)
+set_tests_properties(reader_sym_rank2 PROPERTIES LABELS reader_test)
+set_tests_properties(reader_sym_rank3 PROPERTIES LABELS reader_test)
+set_tests_properties(reader_unsym_rank1 PROPERTIES LABELS reader_test)
+set_tests_properties(reader_unsym_rank2 PROPERTIES LABELS reader_test)
+set_tests_properties(reader_unsym_rank3 PROPERTIES LABELS reader_test)
+
 #
 set(input_data
     sym10.mtx

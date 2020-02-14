@@ -135,7 +135,7 @@ void mtrx_reader::from_mtx(std::string const &fname, bool const &isSym, mtrx_csr
    for (int i=0; i<spdata.nnz_v_.size();i++) {
        std::cout << myid << "nnz_v" << spdata.nnz_v_[i] << std::endl;
    }
-   std::cout << "myid=" << myid << " " << nnz_ << " " << values_.size() << std::endl;
+   std::cout << "myid=" << myid << " " << spdata.nnz_ << " " << spdata.values_.size() << std::endl;
 #endif
    if (spdata.values_.size() != spdata.nnz_) {
        std::cout << "something is wrong. nnz sum doesn't match \n";
@@ -164,7 +164,7 @@ void mtrx_reader::set_b(mtrx_csr const &spdata, rhs &b_v,
     b_v.values_.resize(spdata.local_size_,0.0);
     for (int i = 0; i < spdata.local_size_; i++) {
         b_v.rows_[i] = i + spdata.ilower_;
-        b_v.values_[i] = 1.0; //static_cast<double> (b_v.rows_[i] + 1);
+        b_v.values_[i] = static_cast<double> (b_v.rows_[i] + 1);
     }
 }
 
