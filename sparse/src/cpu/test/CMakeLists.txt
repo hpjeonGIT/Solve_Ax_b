@@ -13,12 +13,12 @@ add_test(NAME hypre_sym_rank3     COMMAND "mpirun" "-n" 3 "test_sym_hypre")
 add_test(NAME hypre_unsym_rank1   COMMAND "mpirun" "-n" 1 "test_unsym_hypre")
 add_test(NAME hypre_unsym_rank2   COMMAND "mpirun" "-n" 2 "test_unsym_hypre")
 add_test(NAME hypre_unsym_rank3   COMMAND "mpirun" "-n" 3 "test_unsym_hypre")
-set_tests_properties(hypre_sym_rank1 PROPERTIES LABELS cpu_test)
-set_tests_properties(hypre_sym_rank2 PROPERTIES LABELS cpu_test)
-set_tests_properties(hypre_sym_rank3 PROPERTIES LABELS cpu_test)
-set_tests_properties(hypre_unsym_rank1 PROPERTIES LABELS cpu_test)
-set_tests_properties(hypre_unsym_rank2 PROPERTIES LABELS cpu_test)
-set_tests_properties(hypre_unsym_rank3 PROPERTIES LABELS cpu_test)
+set_tests_properties(hypre_sym_rank1 PROPERTIES LABELS "cpu_test;hypre_sym_test")
+set_tests_properties(hypre_sym_rank2 PROPERTIES LABELS "cpu_test;hypre_sym_test")
+set_tests_properties(hypre_sym_rank3 PROPERTIES LABELS "cpu_test;hypre_sym_test")
+set_tests_properties(hypre_unsym_rank1 PROPERTIES LABELS "cpu_test;hypre_unsym_test")
+set_tests_properties(hypre_unsym_rank2 PROPERTIES LABELS "cpu_test;hypre_unsym_test")
+set_tests_properties(hypre_unsym_rank3 PROPERTIES LABELS "cpu_test;hypre_unsym_test")
 #
 set(input_data
     sym10.mtx
