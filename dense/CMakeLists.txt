@@ -15,6 +15,9 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -O2")  
 endif()
 #
+set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_COMMAND} -E time")
+# Timing for build - Ref: https://stackoverflow.com/questions/5962285/cmake-compilation-statistics
+# Per object or target, Elapsed time is printed
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -std=c++11" )
 include_directories(${CUDA_INCLUDE_DIRS})
 set(ALL_CUDA_LIBS ${CUDA_LIBRARIES} ${CUDA_cusparse_LIBRARY} ${CUDA_cublas_LIBRARY})
