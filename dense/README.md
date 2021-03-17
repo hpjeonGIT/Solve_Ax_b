@@ -12,6 +12,8 @@
 - `cd dense`
 - `mkdir build; cd build`
 - `cmake ..`
+	- `cmake .. --graphviz=egloos.dot ; dot -Tpng egloos.dot -o egloos.png`
+![sample snapshot of graphviz from cmake](./egloos.png)
 - `make -j 3`
 - `make install`
 - `./bin/dense_solver` # Running the solver executable
